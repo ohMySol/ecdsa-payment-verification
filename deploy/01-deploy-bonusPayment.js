@@ -5,9 +5,9 @@ const { verify, tenderlyVerify } = require("../utils/contract-verification/verif
 module.exports = async({deployments, getNamedAccounts}) => {
     const {deploy, log} = deployments
     const {deployer} = await getNamedAccounts()
-    const contractName = "PaymentToken"
+    const contractName = "BonusPayment"
 
-    log(`\n============ Deploying PaymentToken contract to ${network.name} network ============\n`)
+    log(`\n============ Deploying BonusPayment contract to ${network.name} network ============\n`)
         
     const contract = await deploy(contractName, {
         from: deployer,
@@ -30,4 +30,4 @@ module.exports = async({deployments, getNamedAccounts}) => {
     
 }
 
-module.exports.tags = ["token", "all"]
+module.exports.tags = ["payment", "all"]
