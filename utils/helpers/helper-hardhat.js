@@ -17,6 +17,7 @@ const networkConfig = {
         ),
         privateKey: process.env.PRIVATE_KEY_LOCAL,
         contractAddress: process.env.BONUS_PAYMENT_LOCAL_ADDRESS,
+        tokenAddress: process.env.TOKEN_LOCAL_ADDRESS,
         chainId: 31337
     },
     sepolia: {
@@ -30,6 +31,7 @@ const networkConfig = {
         ),
         privateKey: process.env.PRIVATE_KEY,
         contractAddress: process.env.BONUS_PAYMENT_SEPOLIA_ADDRESS,
+        tokenAddress: process.env.TOKEN_SEPOLIA_ADDRESS,
         chainId: 11155111
     }
 }
