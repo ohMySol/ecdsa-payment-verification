@@ -30,7 +30,7 @@ const networkConfig = {
         ),
         privateKey: process.env.PRIVATE_KEY,
         contractAddress: process.env.BONUS_PAYMENT_SEPOLIA_ADDRESS,
-        chainId: 11155111
+        chainId: 11155111    
     }
 }
 
