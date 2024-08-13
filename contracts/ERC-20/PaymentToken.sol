@@ -8,7 +8,7 @@ contract PaymentToken is ERC20, Ownable {
     constructor() ERC20("PaymentToken", "PT") Ownable(msg.sender){
     }
 
-    function mint(address _to, uint256 _amount) external onlyOwner {
-        _mint(_to,_amount);
+    function mint(uint256 _amount) external onlyOwner() {
+        _mint(address(this), _amount);
     }
 }
