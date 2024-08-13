@@ -1,7 +1,7 @@
 const { ethers, JsonRpcProvider } = require("ethers");
 require("@chainlink/env-enc").config();
 require("dotenv").config()
-const {bonusPaymentAbi} = require("../abi/BonusPayment")
+const fs = require('fs')
 
 // For local testing
 const devNetworks = ["localhost", "hardhat"]
@@ -10,10 +10,22 @@ const devNetworks = ["localhost", "hardhat"]
 const networkConfig = {
     hardhat: {
         blockConfirmations: 1,
-        provider: () => new JsonRpcProvider("http://127.0.0.1:8545"),
+        provider: () => new JsonRpcProvider(),
         signer: () => new ethers.Wallet(
                 networkConfig.hardhat.privateKey, 
                 networkConfig.hardhat.provider()
+        ),
+        privateKey: process.env.PRIVATE_KEY_LOCAL,
+        contractAddress: process.env.BONUS_PAYMENT_LOCAL_ADDRESS,
+        tokenAddress: process.env.TOKEN_LOCAL_ADDRESS,
+        chainId: 31337
+    },
+    localhost: {
+        blockConfirmations: 1,
+        provider: () => new JsonRpcProvider("http://127.0.0.1:8545"),
+        signer: () => new ethers.Wallet(
+                networkConfig.localhost.privateKey, 
+                networkConfig.localhost.provider()
         ),
         privateKey: process.env.PRIVATE_KEY_LOCAL,
         contractAddress: process.env.BONUS_PAYMENT_LOCAL_ADDRESS,
@@ -44,10 +56,11 @@ const getNetworkConfig = async(networkName) => {
     return config
 }
 
-getContractInstance = async(networkName) => {
+getContractInstance = async(networkName, contractName) => {
     const config = await getNetworkConfig(networkName)
-    const abi = bonusPaymentAbi
-
+    const data = JSON.parse(fs.readFileSync(`./deployments/${networkName}/${contractName}.json`, "utf8"))
+    const abi = data.abi
+    
     const contract = new ethers.Contract(config.contractAddress, abi, config.signer())
     return contract 
 }
