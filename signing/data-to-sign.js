@@ -3,8 +3,7 @@ const types = {
         { name: "name", type: "string" },
         { name: "version", type: "string" },
         { name: "chainId", type: "uint256" },
-        { name: "verifyingContract", type: "address" },
-        { name: "salt", type: "bytes32"}
+        { name: "verifyingContract", type: "address" }
     ],
     Bonus: [
         { name: "recipientAddress", type: "address" },
@@ -14,14 +13,13 @@ const types = {
 }
 
 // Construct an EIP-712 type message
-const getEip712Message = async(chainId, contractAddress, salt, sender, amount, nonce) => { 
+const getEip712Message = async(chainId, contractAddress, sender, amount, nonce) => { 
     const eip712Message = {
         "domain": {
             "name": "BonusPayment",
             "version": "1",
             "chainId": chainId,
-            "verifyingContract": contractAddress,
-            "salt": salt
+            "verifyingContract": contractAddress
         },
         "message": {
             "recipientAddress": sender,
@@ -38,13 +36,10 @@ const getEip712Message = async(chainId, contractAddress, salt, sender, amount, n
 }
 
 // Defined data for for domain separator and msg
-const getDomainData = async(chainId, contractAddress, salt) => {
+const getDomainNameVersion = async() => {
     const domain = {
         name: "BonusPayment",
-        version: "1",
-        chainId: chainId,
-        verifyingContract: contractAddress,
-        salt: salt
+        version: "1"
     }
     return domain
 }
@@ -61,7 +56,7 @@ const getMessageData = async(sender, amount, nonce) => {
 
 module.exports = {
     types,
-    getDomainData,
+    getDomainNameVersion,
     getMessageData,
     getEip712Message
 }
