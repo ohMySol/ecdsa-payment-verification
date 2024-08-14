@@ -16,7 +16,7 @@ async function sign() {
 
     const eip712Message = await getEip712Message(
         config.chainId, 
-        config.contractAddress,
+        config.contracts['BonusPayment'],
         signer.address, 
         100, 
         nonce
