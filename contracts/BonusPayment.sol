@@ -52,10 +52,6 @@ contract BonusPayment is Pausable, Ownable, BonusPaymentErrors, EIP712 {
         token = IERC20(_token);
     }
 
-    function approveBonuses(uint256 _amount) external onlyOwner() {
-        token.approve(address(this), _amount);
-    }
-
     /**
      * @notice Contract owner can stop contract work.
      * @dev Stops the contract by setting '_paused' variable to 'true'
@@ -94,7 +90,7 @@ contract BonusPayment is Pausable, Ownable, BonusPaymentErrors, EIP712 {
         if (recipient != signer) {
             revert BonusPayment_IncorrectSigner(signer, recipient);
         }
-        withdrawalBalance[recipient]+=_bonusAmount;
+        withdrawalBalance[recipient] += _bonusAmount;
         updNonce();
         emit BonusClaimed(recipient, _bonusAmount);
     }
@@ -104,6 +100,7 @@ contract BonusPayment is Pausable, Ownable, BonusPaymentErrors, EIP712 {
         if (amount <= 0) {
             revert BonusPayment_InsufficientWithdrawBalance(amount);
         }
+        withdrawalBalance[msg.sender] -= amount;
         token.transferFrom(address(token), msg.sender, amount);
         emit BonusPaid(msg.sender, amount);
     }
