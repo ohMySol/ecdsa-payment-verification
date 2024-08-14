@@ -16,8 +16,10 @@ const networkConfig = {
                 networkConfig.hardhat.provider()
         ),
         privateKey: process.env.PRIVATE_KEY_LOCAL,
-        contractAddress: process.env.BONUS_PAYMENT_LOCAL_ADDRESS,
-        tokenAddress: process.env.TOKEN_LOCAL_ADDRESS,
+        contracts: {
+            BonusPayment: process.env.BONUS_PAYMENT_LOCAL_ADDRESS,
+            PaymentToken: process.env.TOKEN_LOCAL_ADDRESS
+        },
         chainId: 31337
     },
     localhost: {
@@ -28,8 +30,10 @@ const networkConfig = {
                 networkConfig.localhost.provider()
         ),
         privateKey: process.env.PRIVATE_KEY_LOCAL,
-        contractAddress: process.env.BONUS_PAYMENT_LOCAL_ADDRESS,
-        tokenAddress: process.env.TOKEN_LOCAL_ADDRESS,
+        contracts: {
+            BonusPayment: process.env.BONUS_PAYMENT_LOCAL_ADDRESS,
+            PaymentToken: process.env.TOKEN_LOCAL_ADDRESS
+        },
         chainId: 31337
     },
     sepolia: {
@@ -42,8 +46,10 @@ const networkConfig = {
             networkConfig.sepolia.provider()
         ),
         privateKey: process.env.PRIVATE_KEY,
-        contractAddress: process.env.BONUS_PAYMENT_SEPOLIA_ADDRESS,
-        tokenAddress: process.env.TOKEN_SEPOLIA_ADDRESS,
+        contracts: {
+            BonusPayment: process.env.BONUS_PAYMENT_SEPOLIA_ADDRESS,
+            PaymentToken: process.env.TOKEN_SEPOLIA_ADDRESS
+        },
         chainId: 11155111
     }
 }
@@ -60,8 +66,12 @@ getContractInstance = async(networkName, contractName) => {
     const config = await getNetworkConfig(networkName)
     const data = JSON.parse(fs.readFileSync(`./deployments/${networkName}/${contractName}.json`, "utf8"))
     const abi = data.abi
-    
-    const contract = new ethers.Contract(config.contractAddress, abi, config.signer())
+    const contractAddress = config.contracts[contractName]
+
+    if (!contractAddress) {
+        throw Error(`Unsupported contract address: ${contractAddress}`)
+    }
+    const contract = new ethers.Contract(contractAddress, abi, config.signer())
     return contract 
 }
 
