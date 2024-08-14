@@ -11,4 +11,8 @@ contract PaymentToken is ERC20, Ownable {
     function mint(uint256 _amount) external onlyOwner() {
         _mint(address(this), _amount);
     }
+
+    function setApproval(uint256 _approvedAmount, address _spender) external onlyOwner() {
+        _approve(address(this), _spender, _approvedAmount);
+    }
 }
