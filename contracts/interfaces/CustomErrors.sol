@@ -20,4 +20,10 @@ interface BonusPaymentErrors {
      * @param amount - current user balance.
      */
     error BonusPayment_InsufficientWithdrawBalance(uint256 amount);
+
+    /**
+     * @dev Error indicates that user doesn't provide address for a new token contract.
+     */
+    error BonusPayment_ZeroTokenAddress();
+
 }
