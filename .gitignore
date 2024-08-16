@@ -1,6 +1,7 @@
 node_modules
 .env
 deployments
+signatures.json
 
 # Hardhat files
 /cache
