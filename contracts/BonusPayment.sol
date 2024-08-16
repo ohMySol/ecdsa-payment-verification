@@ -39,10 +39,11 @@ contract BonusPayment is Pausable, Ownable, BonusPaymentErrors, EIP712 {
 
     modifier notUsedNonce(uint256 _nonce) {
         if (usedNonce[msg.sender][_nonce]) {
-            revert BonusPayment_NonceAlreadyUsed(getNonce());
+            revert BonusPayment_NonceAlreadyUsed(_nonce);
         }
-        usedNonce[msg.sender][getNonce()] = true;
+        usedNonce[msg.sender][_nonce] = true;
         _;
+        updNonce();
     }
 
     constructor(address _token, string memory _name, string memory _version) 
@@ -91,26 +92,34 @@ contract BonusPayment is Pausable, Ownable, BonusPaymentErrors, EIP712 {
             revert BonusPayment_IncorrectSigner(signer, recipient);
         }
         withdrawalBalance[recipient] += _bonusAmount;
-        updNonce();
         emit BonusClaimed(recipient, _bonusAmount);
     }
 
+    /**
+     * @notice Contract owner can change payment token for another token.
+     * @dev Change 'token' insatnce for a new 'token' instance. 
+     * @param _newTokenAddress - address of the new token contract.
+     */
+    function setToken(address _newTokenAddress) external onlyOwner() whenNotPaused() {
+        if (_newTokenAddress == address(0)) {
+            revert BonusPayment_ZeroTokenAddress();
+        }
+        token = IERC20(_newTokenAddress);
+    }
+
+    /**
+     * @notice Transfer claimed bonus(tokens) to user. Balance should be > 0 to perform a transfer.
+     * @dev Function transfer retrieved token amount from the 'withdrawalBalance' mapping,
+     * to receiver.
+     */
     function withdraw() external whenNotPaused() {
         uint256 amount = withdrawalBalance[msg.sender];
         if (amount <= 0) {
             revert BonusPayment_InsufficientWithdrawBalance(amount);
         }
-        withdrawalBalance[msg.sender] -= amount;
+        withdrawalBalance[msg.sender] = 0;
         token.transferFrom(address(token), msg.sender, amount);
         emit BonusPaid(msg.sender, amount);
-    }
-
-    /**
-     * @dev Returns balance for withraw from 'withdrawalBalance' mapping,
-     * for 'msg.sender'.
-     */
-    function getBalance() public view returns(uint256) {
-        return withdrawalBalance[msg.sender];
     }
 
     /**
@@ -173,8 +182,22 @@ contract BonusPayment is Pausable, Ownable, BonusPaymentErrors, EIP712 {
      * @param _s - integer in the range[1...n-1]. It's a proof that this user signs this message.
      * Inside it has a result of the math operation which includes user private key, msg hash and r value.
      */
-    function recoverSigner(uint8 _v, bytes32 _r, bytes32 _s, uint256 _amount, address _recipientAddress) public view returns(address) {
+    function recoverSigner(
+        uint8 _v, 
+        bytes32 _r, 
+        bytes32 _s, 
+        uint256 _amount, 
+        address _recipientAddress
+    ) public view returns(address) {
         bytes32 digest = getDigestHash(_amount, _recipientAddress);
         return digest.recover(_v, _r, _s);
+    }
+
+    /**
+     * @dev Returns balance for withraw from 'withdrawalBalance' mapping,
+     * for 'msg.sender'.
+     */
+    function getBalance() public view returns(uint256) {
+        return withdrawalBalance[msg.sender];
     }
 }
