@@ -1,7 +1,7 @@
 require("@chainlink/env-enc").config();
 require("dotenv").config()
 const {network} = require('hardhat')
-const {getNetworkConfig, getContractInstance} = require('../utils/helpers/helper-hardhat');
+const {getNetworkConfig, getContractInstance, writeSignature} = require('../utils/helpers/helper-hardhat');
 const {getEip712Message} = require('./data-to-sign')
 
 async function sign() {
@@ -37,10 +37,8 @@ async function sign() {
     const r = signature.slice(0, 66); 
     const s = "0x" + signature.slice(66, 130); 
     const v = parseInt(signature.slice(130, 132), 16);
-    console.log('Signature:', signature);
-    console.log('v:', v);
-    console.log('r:', r);
-    console.log('s:', s);
+    
+    await writeSignature(v, r, s)
 }
 
 sign().catch((error) => {
