@@ -93,9 +93,9 @@ getContractInstance = async(networkName, contractName) => {
 // Write created signature parts(v,r,s) to the signatures.json file.
 writeSignature = async(v, r, s) => {
     const signatureData = {
-            v: v,
-            r: r,
-            s: s
+        v: v,
+        r: r,
+        s: s
     }
     await fsp.writeFile('./signing/signatures.json', JSON.stringify(signatureData))
 }
