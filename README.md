@@ -29,6 +29,6 @@ Once the user calls the 'claimBonus' function in the contract, it will verify if
 ### 2. Install Dependencies.
 `$ npm install`
 
-### Set up .env and .env.enc files.
+### 3. Set up .env and .env.enc files.
 1. Make sure all the **.env** and **.env.enc** variables are set correctly. For more info about variables check the **.env.example** and **.env.enc.example** files.
 Also, here is a guide, how to install env-enc and how to use it: [env-enc-guide](https://github.com/smartcontractkit/env-enc)
