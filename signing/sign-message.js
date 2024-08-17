@@ -1,7 +1,7 @@
 require("@chainlink/env-enc").config();
 require("dotenv").config()
 const {network} = require('hardhat')
-const {getNetworkConfig, getContractInstance, writeSignature} = require('../utils/helpers/helper-hardhat');
+const {getNetworkConfig, getContractInstance, writeSignature, getSigner} = require('../utils/helpers/helper-hardhat');
 const {getEip712Message} = require('./data-to-sign')
 
 async function sign() {
@@ -12,12 +12,11 @@ async function sign() {
     const config = await getNetworkConfig(networkName)
     const contract = await getContractInstance(networkName, "BonusPayment")
     const nonce = await contract.getNonce();
-    const signer = await config.signer()
+    const signer = await getSigner(networkName)
 
     const eip712Message = await getEip712Message(
         config.chainId, 
-        config.contracts['BonusPayment'],
-        signer.address, 
+        config.contracts['BonusPayment'], 
         100, 
         nonce
     )
