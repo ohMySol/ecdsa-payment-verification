@@ -6,14 +6,13 @@ const types = {
         { name: "verifyingContract", type: "address" }
     ],
     Bonus: [
-        { name: "recipientAddress", type: "address" },
         { name: "bonusAmount", type: "uint256" },
         { name: "nonce", type: "uint256" }
     ]
 }
 
 // Construct an EIP-712 type message
-const getEip712Message = async(chainId, contractAddress, sender, amount, nonce) => { 
+const getEip712Message = async(chainId, contractAddress, amount, nonce) => { 
     const eip712Message = {
         "domain": {
             "name": "BonusPayment",
@@ -22,7 +21,6 @@ const getEip712Message = async(chainId, contractAddress, sender, amount, nonce) 
             "verifyingContract": contractAddress
         },
         "message": {
-            "recipientAddress": sender,
             "bonusAmount": amount,
             "nonce": nonce
         },
@@ -44,9 +42,8 @@ const getDomainNameVersion = async() => {
     return domain
 }
 
-const getMessageData = async(sender, amount, nonce) => {
+const getMessageData = async(amount, nonce) => {
     const message = {
-        recipientAddress: sender,
         bonusAmount: amount,
         nonce: nonce
     }
