@@ -16,7 +16,7 @@ module.exports = async({deployments, getNamedAccounts}) => {
     const contract = await deploy(contractName, {
         from: deployer,
         log: true,
-        args: [config.tokenAddress, name, version],
+        args: [config.contracts['PaymentToken'], name, version],
         blockConfirmations: config.blockConfirmations
     })
 
