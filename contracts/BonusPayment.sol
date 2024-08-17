@@ -23,14 +23,13 @@ contract BonusPayment is Pausable, Ownable, BonusPaymentErrors, EIP712 {
     
     
     struct Bonus {
-        address recipientAddress;
         uint256 bonusAmount;
         uint256 nonce;
     }
 
     IERC20 public token;
     bytes32 constant BONUS_TYPEHASH = keccak256(abi.encodePacked(
-        "Bonus(address recipientAddress,uint256 bonusAmount,uint256 nonce)"
+        "Bonus(uint256 bonusAmount,uint256 nonce)"
     ));
 
     mapping (address => mapping (uint256  => bool)) public usedNonce;
@@ -87,7 +86,7 @@ contract BonusPayment is Pausable, Ownable, BonusPaymentErrors, EIP712 {
         notUsedNonce(getNonce()) 
     {
         address recipient = msg.sender;
-        address signer = recoverSigner(_v, _r, _s, _bonusAmount, recipient);
+        address signer = recoverSigner(_v, _r, _s, _bonusAmount);
         if (recipient != signer) {
             revert BonusPayment_IncorrectSigner(signer, recipient);
         }
@@ -131,6 +130,20 @@ contract BonusPayment is Pausable, Ownable, BonusPaymentErrors, EIP712 {
     }
 
     /**
+     * @dev Returns the domain name.
+     */
+    function getEIP712Name() external view returns (string memory) {
+        return _EIP712Name();
+    }
+
+    /**
+     * @dev Returns the domain version.
+     */
+    function getEIP712Version() external view returns (string memory) {
+        return _EIP712Version();
+    }
+
+    /**
      * @dev Returns an availble uint256 value for 'msg.sender' from 'nonces' mapping.
      */
     function getNonce() public view returns(uint256) {
@@ -147,12 +160,10 @@ contract BonusPayment is Pausable, Ownable, BonusPaymentErrors, EIP712 {
     /**
      * @dev Creates a hash of the structured 'Bonus' message.
      * @param _amount - amount of tokens user should receive.
-     * @param _recipientAddress - address of the bonus requestor.
      */
-    function getMessageHash(uint256 _amount, address _recipientAddress) public view returns(bytes32) {
+    function getMessageHash(uint256 _amount) public view returns(bytes32) {
         return keccak256(abi.encode(
             BONUS_TYPEHASH,
-            _recipientAddress,
             _amount,
             getNonce()
         ));
@@ -163,11 +174,11 @@ contract BonusPayment is Pausable, Ownable, BonusPaymentErrors, EIP712 {
      * concatination of 'x19'(initial 0x19 byte), 'x01'(version byte), 
      * 'getDomainSeparatorHash()' and  'getBonusHash()'.
      */
-    function getDigestHash(uint256 _amount, address _recipientAddress) public view returns(bytes32) {
+    function getDigestHash(uint256 _amount) public view returns(bytes32) {
         return keccak256(abi.encodePacked(
             "\x19\x01",
             getDomainSeparatorHash(),
-            getMessageHash(_amount, _recipientAddress)
+            getMessageHash(_amount)
         ));
     }
 
@@ -186,10 +197,9 @@ contract BonusPayment is Pausable, Ownable, BonusPaymentErrors, EIP712 {
         uint8 _v, 
         bytes32 _r, 
         bytes32 _s, 
-        uint256 _amount, 
-        address _recipientAddress
+        uint256 _amount
     ) public view returns(address) {
-        bytes32 digest = getDigestHash(_amount, _recipientAddress);
+        bytes32 digest = getDigestHash(_amount);
         return digest.recover(_v, _r, _s);
     }
 
