@@ -11,8 +11,6 @@ deploy, write to contract, read from the contract, create providers,
 signers and contracts instances.
 */
 
-
-
 // For local testing.
 const devNetworks = ["localhost", "hardhat"]
 
@@ -24,10 +22,12 @@ const networkConfig = {
     hardhat: {
         blockConfirmations: 1,
         provider: () => new JsonRpcProvider(),
-        signer: () => new ethers.Wallet(
-                networkConfig.hardhat.privateKey, 
-                networkConfig.hardhat.provider()
-        ),
+        signer: (privateKey) => { //provide your own private key
+            if (!privateKey) {
+                privateKey = networkConfig.hardhat.privateKey; // if no private key provided -> use default one
+            }
+            return new ethers.Wallet(privateKey, networkConfig.hardhat.provider()
+        )},
         privateKey: process.env.PRIVATE_KEY_LOCAL,
         contracts: {
             BonusPayment: process.env.BONUS_PAYMENT_LOCAL_ADDRESS,
@@ -38,10 +38,12 @@ const networkConfig = {
     localhost: {
         blockConfirmations: 1,
         provider: () => new JsonRpcProvider("http://127.0.0.1:8545"),
-        signer: () => new ethers.Wallet(
-                networkConfig.localhost.privateKey, 
-                networkConfig.localhost.provider()
-        ),
+        signer: (privateKey) => {
+            if (!privateKey) {
+                privateKey = networkConfig.localhost.privateKey;
+            }
+            return new ethers.Wallet(privateKey, networkConfig.localhost.provider()
+        )},
         privateKey: process.env.PRIVATE_KEY_LOCAL,
         contracts: {
             BonusPayment: process.env.BONUS_PAYMENT_LOCAL_ADDRESS,
@@ -79,7 +81,7 @@ const getNetworkConfig = async(networkName) => {
 // Returns a 'contractName' instance on the specific 'networkName'.
 getContractInstance = async(networkName, contractName) => {
     const config = await getNetworkConfig(networkName)
-    const data = JSON.parse(await fsp.readFile(`./deployments/${networkName}/${contractName}.json`, "utf8"))
+    const data = JSON.parse(await fsp.readFile(`./artifacts/contracts/${contractName}.sol/${contractName}.json`, "utf8"))
     const abi = data.abi
     const contractAddress = config.contracts[contractName]
 
@@ -90,19 +92,25 @@ getContractInstance = async(networkName, contractName) => {
     return contract 
 }
 
+getSigner = async(networkName, privateKey) => {
+    const config = await getNetworkConfig(networkName)
+    return config.signer(privateKey)
+}
+
 // Write created signature parts(v,r,s) to the signatures.json file.
-writeSignature = async(v, r, s) => {
+writeSignature = async(v, r, s, amount) => {
     const signatureData = {
         v: v,
         r: r,
-        s: s
+        s: s,
+        amount: amount
     }
     await fsp.writeFile('./signing/signatures.json', JSON.stringify(signatureData))
 }
 
 readSignature = async() => {
-   const {v, r, s} = JSON.parse(await fsp.readFile('./signing/signatures.json', 'utf8'))
-   return {v, r, s}
+   const {v, r, s, amount} = JSON.parse(await fsp.readFile('./signing/signatures.json', 'utf8'))
+   return {v, r, s, amount}
 }
 
 
@@ -112,5 +120,6 @@ module.exports = {
     getNetworkConfig,
     getContractInstance,
     writeSignature,
-    readSignature
+    readSignature,
+    getSigner
 }
