@@ -3,7 +3,17 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
-  "scripts": {},
+  "scripts": {
+    "dev": "nodemon app/app.js",
+    "test": "nodemon --watch test/ --exec npx hardhat test --network",
+    "ht": "npx hardhat test",
+    "hd": "npx hardhat deploy --network",
+    "mint": "npx hardhat run scripts/mint.js --network",
+    "approve": "npx hardhat run scripts/approve.js --network",
+    "claim": "npx hardhat run scripts/claim-bonus.js --network",
+    "withdraw": "npx hardhat run scripts/withdraw.js --network",
+    "recover": "npx hardhat run scripts/recover.js --network" 
+  },
   "author": "Anton",
   "license": "ISC",
   "devDependencies": {
@@ -33,6 +43,7 @@
   "dependencies": {
     "@chainlink/env-enc": "^1.0.5",
     "@openzeppelin/contracts": "^5.0.2",
-    "dotenv": "^16.4.5"
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2"
   }
 }
