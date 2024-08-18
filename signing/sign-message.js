@@ -42,11 +42,6 @@ async function sign(amount, networkName) {
     return {v,r,s}
 }
 
-/* sign().catch((error) => {
-  console.error(error);
-  process.exitCode = 1;
-}); */
-
 module.exports = {
     sign
 }
