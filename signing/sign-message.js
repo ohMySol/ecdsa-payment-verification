@@ -1,12 +1,9 @@
 require("@chainlink/env-enc").config();
 require("dotenv").config()
-const {network} = require('hardhat')
 const {getNetworkConfig, getContractInstance, writeSignature, getSigner} = require('../utils/helpers/helper-hardhat');
 const {getEip712Message} = require('./data-to-sign')
 
-async function sign() {
-    const networkName =  network.name
-    
+async function sign(amount, networkName) {    
     console.log(`\nSigning message in ${networkName} network...\n`)
     
     const config = await getNetworkConfig(networkName)
@@ -14,10 +11,14 @@ async function sign() {
     const nonce = await contract.getNonce();
     const signer = await getSigner(networkName)
 
+    if (isNaN(amount) || amount <= 0) {
+        throw new Error("Please provide a valid positive bonus amount parameter.");
+    }
+
     const eip712Message = await getEip712Message(
         config.chainId, 
         config.contracts['BonusPayment'], 
-        100, 
+        amount, 
         nonce
     )
 
@@ -37,10 +38,15 @@ async function sign() {
     const s = "0x" + signature.slice(66, 130); 
     const v = parseInt(signature.slice(130, 132), 16);
     
-    await writeSignature(v, r, s)
+    await writeSignature(v, r, s, amount)
+    return {v,r,s}
 }
 
-sign().catch((error) => {
+/* sign().catch((error) => {
   console.error(error);
   process.exitCode = 1;
-});
+}); */
+
+module.exports = {
+    sign
+}
