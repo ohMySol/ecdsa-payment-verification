@@ -55,7 +55,7 @@ Inside app.js I am importing a sign route with the signing endpoint logic.
 
 ### 5. Sign a message
 5.1 To sign a message you should follow to this url **http://localhost:3030/sign/message/amount/network**,
-and paste there 2 parameters: **amount** - amount of tokens(only number value, couldn't be 0 or less), and **<network>** - network name where you are signing a message(localhost, sepolia...). Example: **http://localhost:3030/sign/message/200/localhost**\
+and paste there 2 parameters: **amount** - amount of tokens(only number value, couldn't be 0 or less), and **<network>** - network name where you are signing a message(localhost, sepolia...). Example: **http://localhost:3030/sign/message/200/localhost**.\
 5.2 Once message was signed, endpoint will return you a signature parts(v, r, s) in json object. So that you can grab them and use when calling a **claimBonus** function in smart contract to receive your bonus.
 ❗️Message will be signed with the help of the signer object created in the beginning of the **sign-message.js** script. Signer will be created using the private key provided for each specific network in the **helper-hardhat.js** in networkConfig object. 
 When you signing a message on the backend --> signer and contract instance are created with the 'networkConfig' help based on the network you are signing. Yes sounds not easy, but you need to check the code to understand. This allow me to dynamically create a contract instance and a signer, based in which network the message is signed.
