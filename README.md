@@ -40,11 +40,11 @@ Also, here is a guide, how to install env-enc and how to use it: [env-enc-guide]
 Run command `npm run node`. This command will spin up a new isolated hardhat network(localhost).
 
 ### 2. Start backend server
-Run command `npm run dev`. This will create a new express server on port 3030(hardcoded in app.js).
+1. Run command `npm run dev`. This will create a new express server on port 3030(hardcoded in app.js).
 Inside app.js I am importing a sign route with the signing endpoint logic.
 
 ### 3. Run the mint script with desired amount of tokens.
-3.1 Run command `npm run mint <network name>`. This will run a **mint.js** script. Inside this script, the ERC20 mint function will be triggered and 1000(hardcoded value, change if needed) will be minted to the ERC20 token address. 
+3.1 Run command `npm run mint <network name>`. This will run a **mint.js** script. Inside this script, the ERC20 mint function will be triggered and 1000(hardcoded value, change if needed) will be minted to the ERC20 token address.\
 3.2 So ERC20 contract is the owner of the minted tokens(this logic can be changed in PaymentToke.sol if you need).
 3.3 After a successfull minting you should see a message in the console 'Successfully mint: 1000 for <PaymentToken address>'
 
