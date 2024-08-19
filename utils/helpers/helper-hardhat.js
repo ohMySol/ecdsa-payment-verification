@@ -56,10 +56,12 @@ const networkConfig = {
         provider: () => new JsonRpcProvider(
             `https://sepolia.infura.io/v3/${process.env.INFURA_API_KEY}`,
         ),
-        signer: () => new ethers.Wallet(
-            networkConfig.sepolia.privateKey, 
-            networkConfig.sepolia.provider()
-        ),
+        signer: (privateKey) => {
+            if (!privateKey) {
+                privateKey = networkConfig.sepolia.privateKey;
+            }
+            return new ethers.Wallet(privateKey, networkConfig.sepolia.provider()
+        )},
         privateKey: process.env.PRIVATE_KEY,
         contracts: {
             BonusPayment: process.env.BONUS_PAYMENT_SEPOLIA_ADDRESS,
