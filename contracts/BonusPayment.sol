@@ -21,7 +21,6 @@ contract BonusPayment is Pausable, Ownable, BonusPaymentErrors, EIP712 {
         uint256 amount
     );
     
-    
     struct Bonus {
         uint256 bonusAmount;
         uint256 nonce;
