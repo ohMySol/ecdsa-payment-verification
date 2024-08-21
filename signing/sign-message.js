@@ -21,7 +21,7 @@ async function sign(amount, networkName, privateKey) {
         if (isNaN(amount) || amount <= 0) {
             throw new Error("Please provide a valid positive bonus amount parameter.");
         }
-
+    
         const eip712Message = await getEip712Message(
             config.chainId, 
             config.contracts['BonusPayment'], 

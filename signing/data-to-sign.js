@@ -50,7 +50,6 @@ const getMessageData = async(amount, nonce) => {
     return message
 }
 
-
 module.exports = {
     types,
     getDomainNameVersion,
